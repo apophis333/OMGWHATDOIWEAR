@@ -10,6 +10,10 @@
   background-color: var(--dark-bg);
 }
 
+@media (max-width: 768px) {
+  .main-content { width:100%; min-width:0; }
+}
+
 /* Modal styles */
 .modal-overlay {
   position: fixed;
@@ -61,4 +65,11 @@
   display: flex;
   gap: 10px;
   justify-content: flex-end;
+}
+
+@media (max-width: 600px) {
+  .modal { width:calc(100% - 24px); max-height:calc(100vh - 24px); border-radius:10px; }
+  .modal-header, .modal-body, .modal-footer { padding:16px; }
+  .modal-footer { position:sticky; bottom:0; background:#fff; }
+  .modal-footer button { flex:1; }
 }

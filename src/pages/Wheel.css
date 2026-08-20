@@ -130,4 +130,10 @@
 @media (max-width: 820px) {
   .wheel-section { grid-template-columns:1fr; padding:25px 16px 35px; gap:30px; }
   .visual-wheel { width:min(360px, 78vw); }
+  .wheel-content { padding:20px 16px 34px; }
+  .wheel-controls { align-items:flex-start; padding:14px; }
+  .wheel-controls .filter-buttons { width:100%; overflow-x:auto; flex-wrap:nowrap; padding-bottom:3px; }
+  .wheel-controls .filter-btn { flex:0 0 auto; }
+  .wheel-count { margin-left:0; }
+  .wheel-label { font-size:9px; width:90px; margin-left:-45px; }
 }

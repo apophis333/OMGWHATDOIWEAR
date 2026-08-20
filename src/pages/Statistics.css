@@ -124,3 +124,13 @@
 .worn-tag { display:flex; align-items:center; gap:10px; padding:10px 12px; background:#f4eee9; border-radius:999px; color:#5f5148; }
 .worn-tag span { font-size:13px; }
 .worn-tag strong { font-size:11px; color:#8d796a; font-weight:600; }
+
+@media (max-width: 768px) {
+  .statistics-content { padding:20px 16px 34px; }
+  .stats-dashboard { grid-template-columns:1fr 1fr; gap:12px; }
+  .stat-box { padding:16px; }
+  .stat-box.full-width { grid-column:1 / -1; }
+  .stat-big-value { font-size:36px; }
+  .wear-item { gap:8px; }
+  .wear-item .wear-count { margin-left:auto; }
+}

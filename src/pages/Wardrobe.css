@@ -286,3 +286,18 @@
 .btn-small-danger:hover {
   background-color: #c0392b;
 }
+
+@media (max-width: 768px) {
+  .wardrobe-content { padding:20px 16px 34px; }
+  .wardrobe-controls { gap:12px; margin-bottom:22px; }
+  .search-box { min-width:100%; }
+  .filter-buttons { width:100%; overflow-x:auto; flex-wrap:nowrap; padding-bottom:3px; }
+  .filter-btn { flex:0 0 auto; }
+  .pieces-grid { grid-template-columns:repeat(2, minmax(0, 1fr)); gap:12px; }
+  .piece-info { padding:12px; }
+  .piece-info h3 { font-size:13px; }
+  .piece-actions { flex-direction:column; }
+  .form-grid { grid-template-columns:1fr; gap:0; }
+  .category-buttons { gap:6px; }
+  .category-btn { padding:9px 5px; font-size:12px; }
+}
