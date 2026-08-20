@@ -18,6 +18,14 @@ function Statistics({ wearHistory, templates }) {
     .sort((a, b) => b.count - a.count)
     .slice(0, 5)
 
+  const wornTags = {}
+  wearHistory.forEach(wear => {
+    const template = templates.find(item => item.id === wear.templateId)
+    const tags = Array.isArray(template?.tags) ? template.tags : (template?.tags || '').split(',').map(tag => tag.trim()).filter(Boolean)
+    tags.forEach(tag => { wornTags[tag] = (wornTags[tag] || 0) + 1 })
+  })
+  const topWornTags = Object.entries(wornTags).sort(([, first], [, second]) => second - first).slice(0, 8)
+
   return (
     <div className="page">
       <PageHeader 
@@ -57,6 +65,11 @@ function Statistics({ wearHistory, templates }) {
                   ))
                 )}
               </div>
+            </div>
+
+            <div className="stat-box full-width">
+              <div className="stat-title">Top Worn Tags</div>
+              {topWornTags.length === 0 ? <p className="no-data">Add tags to templates to see your most-worn styles.</p> : <div className="worn-tags-list">{topWornTags.map(([tag, count]) => <div className="worn-tag" key={tag}><span>#{tag}</span><strong>{count} wear{count === 1 ? '' : 's'}</strong></div>)}</div>}
             </div>
 
             <div className="stat-box full-width">

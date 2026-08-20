@@ -5,7 +5,7 @@ import './Wheel.css'
 const FILTERS = ['All', 'Outfits', 'Vibes', 'Custom']
 const SEGMENT_COLORS = ['#d9b7a6', '#b6c8bf', '#d7c6a3', '#c4b7cc', '#c9aeb1', '#b7c2d1']
 
-function Wheel({ templates, wearHistory, updateWearHistory, onCreateTemplate }) {
+function Wheel({ templates, wheelFolder, wearHistory, updateWearHistory, onCreateTemplate, onClearBoardWheel }) {
   const [filterType, setFilterType] = useState('All')
   const [selectedOutfit, setSelectedOutfit] = useState(null)
   const [showWearModal, setShowWearModal] = useState(false)
@@ -13,7 +13,9 @@ function Wheel({ templates, wearHistory, updateWearHistory, onCreateTemplate }) 
   const [isSpinning, setIsSpinning] = useState(false)
   const [rotation, setRotation] = useState(0)
 
-  const filteredTemplates = templates.filter(t => {
+  const boardTemplateIds = wheelFolder?.templateIds || null
+  const availableTemplates = boardTemplateIds ? templates.filter(template => boardTemplateIds.includes(template.id)) : templates
+  const filteredTemplates = availableTemplates.filter(t => {
     if (filterType === 'All') return true
     if (filterType === 'Outfits') return t.type === 'Outfit'
     if (filterType === 'Vibes') return t.type === 'Vibe'
@@ -69,12 +71,13 @@ function Wheel({ templates, wearHistory, updateWearHistory, onCreateTemplate }) 
   return (
     <div className="page">
       <PageHeader 
-        title="IDK WHAT TO WEAR?!"
-        subtitle="Can't decide? Let fate pick your look for the day."
+        title={wheelFolder ? `Spin: ${wheelFolder.name}` : 'IDK WHAT TO WEAR?!'}
+        subtitle={wheelFolder ? 'Choosing only from this board.' : "Can't decide? Let fate pick your look for the day."}
       />
 
       <div className="wheel-content">
         <div className="wheel-controls">
+          {wheelFolder && <button className="back-link" onClick={onClearBoardWheel}>Use all templates</button>}
           <div className="filter-buttons">
             <span className="filter-label">TYPE</span>
             {FILTERS.map(type => (

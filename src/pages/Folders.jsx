@@ -6,6 +6,10 @@ function Folders({ folders, updateFolders, wardrobePieces, templates }) {
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [folderName, setFolderName] = useState('')
   const [folderDescription, setFolderDescription] = useState('')
+  const [boardView, setBoardView] = useState('All')
+  const [boardSearch, setBoardSearch] = useState('')
+  const [boardFilters, setBoardFilters] = useState({ season: 'All seasons', occasion: 'All occasions', color: 'All colors', category: 'All types' })
+  const [draggedKey, setDraggedKey] = useState(null)
 
   const selectedFolder = folders.find(folder => folder.id === selectedFolderId)
   const folderPieces = selectedFolder
@@ -14,6 +18,27 @@ function Folders({ folders, updateFolders, wardrobePieces, templates }) {
   const folderTemplates = selectedFolder
     ? templates.filter(template => (selectedFolder.templateIds || []).includes(template.id))
     : []
+  const inspirations = selectedFolder?.inspirations || []
+  const orderedKeys = selectedFolder?.itemOrder?.length
+    ? selectedFolder.itemOrder
+    : [...folderPieces.map(piece => `piece:${piece.id}`), ...folderTemplates.map(template => `template:${template.id}`), ...inspirations.map(item => `inspiration:${item.id}`)]
+  const boardItems = orderedKeys.map(key => {
+    const [type, id] = key.split(':')
+    if (type === 'piece') return { key, type, item: folderPieces.find(piece => String(piece.id) === id) }
+    if (type === 'template') return { key, type, item: folderTemplates.find(template => String(template.id) === id) }
+    return { key, type, item: inspirations.find(inspiration => String(inspiration.id) === id) }
+  }).filter(entry => entry.item)
+  const visibleBoardItems = boardItems.filter(({ item, type }) => {
+    const searchable = `${item.name || ''} ${item.notes || ''} ${item.tags || ''} ${item.color || ''} ${item.occasion || ''}`.toLowerCase()
+    if (boardSearch && !searchable.includes(boardSearch.toLowerCase())) return false
+    if (boardView === 'Favorites' && !item.favorite) return false
+    if (boardView === 'Recent' && item.createdAt && Date.now() - new Date(item.createdAt).getTime() > 1000 * 60 * 60 * 24 * 30) return false
+    if (boardFilters.season !== 'All seasons' && item.season !== boardFilters.season) return false
+    if (boardFilters.occasion !== 'All occasions' && item.occasion !== boardFilters.occasion) return false
+    if (boardFilters.color !== 'All colors' && item.color?.toLowerCase() !== boardFilters.color.toLowerCase()) return false
+    if (boardFilters.category !== 'All types' && (item.category || item.type) !== boardFilters.category) return false
+    return true
+  })
 
   const createFolder = () => {
     if (!folderName.trim()) return
@@ -22,7 +47,9 @@ function Folders({ folders, updateFolders, wardrobePieces, templates }) {
       name: folderName.trim(),
       description: folderDescription.trim(),
       pieceIds: [],
-      templateIds: []
+      templateIds: [],
+      inspirations: [],
+      itemOrder: []
     }
     updateFolders([...folders, folder])
     setSelectedFolderId(folder.id)
@@ -36,16 +63,47 @@ function Folders({ folders, updateFolders, wardrobePieces, templates }) {
       if (folder.id !== selectedFolderId) return folder
       const key = type === 'piece' ? 'pieceIds' : 'templateIds'
       const ids = folder[key] || []
-      return ids.includes(id) ? folder : { ...folder, [key]: [...ids, id] }
+      const keyName = `${type}:${id}`
+      return ids.includes(id) ? folder : { ...folder, [key]: [...ids, id], itemOrder: [...(folder.itemOrder || []), keyName] }
     }))
   }
 
   const removeFromFolder = (type, id) => {
     updateFolders(folders.map(folder => {
       if (folder.id !== selectedFolderId) return folder
+      if (type === 'inspiration') {
+        return { ...folder, inspirations: (folder.inspirations || []).filter(item => item.id !== id), itemOrder: (folder.itemOrder || []).filter(keyName => keyName !== `inspiration:${id}`) }
+      }
       const key = type === 'piece' ? 'pieceIds' : 'templateIds'
-      return { ...folder, [key]: (folder[key] || []).filter(itemId => itemId !== id) }
+      return { ...folder, [key]: (folder[key] || []).filter(itemId => itemId !== id), itemOrder: (folder.itemOrder || []).filter(keyName => keyName !== `${type}:${id}`) }
     }))
+  }
+
+  const reorderBoard = (fromKey, toKey) => {
+    if (!fromKey || !toKey || fromKey === toKey) return
+    updateFolders(folders.map(folder => {
+      if (folder.id !== selectedFolderId) return folder
+      const nextOrder = [...(folder.itemOrder || orderedKeys)]
+      const fromIndex = nextOrder.indexOf(fromKey)
+      const toIndex = nextOrder.indexOf(toKey)
+      if (fromIndex < 0 || toIndex < 0) return folder
+      nextOrder.splice(fromIndex, 1)
+      nextOrder.splice(toIndex, 0, fromKey)
+      return { ...folder, itemOrder: nextOrder }
+    }))
+  }
+
+  const addInspiration = event => {
+    const file = event.target.files?.[0]
+    if (!file || !selectedFolderId) return
+    const reader = new FileReader()
+    reader.onload = loadEvent => updateFolders(folders.map(folder => {
+      if (folder.id !== selectedFolderId) return folder
+      const inspiration = { id: Date.now(), name: file.name.replace(/\.[^/.]+$/, ''), photoUrl: loadEvent.target.result, createdAt: new Date().toISOString(), favorite: false, notes: '' }
+      return { ...folder, inspirations: [...(folder.inspirations || []), inspiration], itemOrder: [...(folder.itemOrder || orderedKeys), `inspiration:${inspiration.id}`] }
+    }))
+    reader.readAsDataURL(file)
+    event.target.value = ''
   }
 
   const deleteFolder = () => {
@@ -92,22 +150,18 @@ function Folders({ folders, updateFolders, wardrobePieces, templates }) {
                 <h2>{selectedFolder.name}</h2>
                 {selectedFolder.description && <p>{selectedFolder.description}</p>}
               </div>
-              <button className="text-danger" onClick={deleteFolder}>Delete folder</button>
+              <div className="board-actions"><label className="btn-secondary upload-inspiration">+ Inspiration<input type="file" accept="image/*" onChange={addInspiration} /></label><button className="btn-primary" onClick={() => onOpenBoardWheel(selectedFolder.id)}>Spin this board</button><button className="text-danger" onClick={deleteFolder}>Delete folder</button></div>
             </div>
 
+            <div className="board-toolbar"><input placeholder="Search this board" value={boardSearch} onChange={event => setBoardSearch(event.target.value)} /><div className="board-view-buttons">{['All', 'Favorites', 'Recent'].map(view => <button key={view} className={boardView === view ? 'active' : ''} onClick={() => setBoardView(view)}>{view}</button>)}</div></div>
+            <div className="board-filters"><select value={boardFilters.season} onChange={event => setBoardFilters(prev => ({ ...prev, season: event.target.value }))}><option>All seasons</option><option>Spring</option><option>Summer</option><option>Autumn</option><option>Winter</option><option>All year</option></select><select value={boardFilters.occasion} onChange={event => setBoardFilters(prev => ({ ...prev, occasion: event.target.value }))}><option>All occasions</option><option>Everyday</option><option>Work</option><option>Formal</option><option>Going out</option><option>Travel</option></select><select value={boardFilters.color} onChange={event => setBoardFilters(prev => ({ ...prev, color: event.target.value }))}><option>All colors</option>{[...new Set(boardItems.map(({ item }) => item.color).filter(Boolean))].map(color => <option key={color}>{color}</option>)}</select><select value={boardFilters.category} onChange={event => setBoardFilters(prev => ({ ...prev, category: event.target.value }))}><option>All types</option>{[...new Set(boardItems.map(({ item }) => item.category || item.type).filter(Boolean))].map(category => <option key={category}>{category}</option>)}</select></div>
+
             <div className="board-grid">
-              {folderPieces.map(piece => (
-                <article className="board-card" key={`piece-${piece.id}`}>
-                  {piece.photoUrl ? <img src={piece.photoUrl} alt={piece.name} /> : <div className="board-placeholder">No photo</div>}
-                  <div className="board-card-copy"><strong>{piece.name}</strong><span>{piece.category}</span></div>
-                  <button className="remove-board-item" onClick={() => removeFromFolder('piece', piece.id)}>Remove</button>
-                </article>
-              ))}
-              {folderTemplates.map(template => (
-                <article className="board-card" key={`template-${template.id}`}>
-                  {template.photoUrl ? <img src={template.photoUrl} alt={template.name} /> : <div className="board-placeholder">No photo</div>}
-                  <div className="board-card-copy"><strong>{template.name}</strong><span>{template.type}</span></div>
-                  <button className="remove-board-item" onClick={() => removeFromFolder('template', template.id)}>Remove</button>
+              {visibleBoardItems.map(({ key, type, item }) => (
+                <article className="board-card" key={key} draggable onDragStart={() => setDraggedKey(key)} onDragOver={event => event.preventDefault()} onDrop={() => { reorderBoard(draggedKey, key); setDraggedKey(null) }}>
+                  {item.photoUrl ? <img src={item.photoUrl} alt={item.name} /> : <div className="board-placeholder">No photo</div>}
+                  <div className="board-card-copy"><div className="piece-title-row"><strong>{item.name}</strong><button className={`favorite-button ${item.favorite ? 'active' : ''}`} onClick={() => { if (type === 'inspiration') { updateFolders(folders.map(folder => folder.id === selectedFolderId ? { ...folder, inspirations: (folder.inspirations || []).map(inspiration => inspiration.id === item.id ? { ...inspiration, favorite: !inspiration.favorite } : inspiration) } : folder)) } }}>{item.favorite ? '♥' : '♡'}</button></div><span>{type === 'inspiration' ? 'Inspiration' : item.category || item.type}</span>{item.notes && <small className="board-note">{item.notes}</small>}</div>
+                  <button className="remove-board-item" onClick={() => removeFromFolder(type, item.id)}>Remove</button>
                 </article>
               ))}
             </div>

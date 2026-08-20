@@ -119,3 +119,8 @@
   padding: 20px;
   font-size: 14px;
 }
+
+.worn-tags-list { display:flex; flex-wrap:wrap; gap:10px; }
+.worn-tag { display:flex; align-items:center; gap:10px; padding:10px 12px; background:#f4eee9; border-radius:999px; color:#5f5148; }
+.worn-tag span { font-size:13px; }
+.worn-tag strong { font-size:11px; color:#8d796a; font-weight:600; }

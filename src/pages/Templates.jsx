@@ -11,7 +11,7 @@ const normalizeTags = (tags) => Array.isArray(tags)
   ? tags
   : (tags || '').split(',').map(tag => tag.trim()).filter(Boolean)
 
-function Templates({ templates, updateTemplates, wardrobePieces }) {
+function Templates({ templates, updateTemplates, wardrobePieces, folders, updateFolders }) {
   const [showModal, setShowModal] = useState(false)
   const [filterType, setFilterType] = useState('All')
   const [editingId, setEditingId] = useState(null)
@@ -127,6 +127,8 @@ function Templates({ templates, updateTemplates, wardrobePieces }) {
     } else {
       const newTemplate = {
         id: Date.now(),
+        createdAt: new Date().toISOString(),
+        favorite: false,
         ...templateData,
         slots
       }
@@ -140,6 +142,14 @@ function Templates({ templates, updateTemplates, wardrobePieces }) {
     if (confirm('Delete this template?')) {
       updateTemplates(templates.filter(t => t.id !== id))
     }
+  }
+
+  const addTemplateToFolder = (templateId, folderId) => {
+    if (!folderId) return
+    updateFolders(folders.map(folder => folder.id === Number(folderId)
+      ? { ...folder, templateIds: [...new Set([...(folder.templateIds || []), templateId])], itemOrder: [...new Set([...(folder.itemOrder || []), `template:${templateId}`])] }
+      : folder
+    ))
   }
 
   return (
@@ -186,7 +196,7 @@ function Templates({ templates, updateTemplates, wardrobePieces }) {
                   </div>
                 )}
                 <div className="template-info">
-                  <h3>{template.name}</h3>
+                  <div className="piece-title-row"><h3>{template.name}</h3><button className={`favorite-button ${template.favorite ? 'active' : ''}`} onClick={() => updateTemplates(templates.map(item => item.id === template.id ? { ...item, favorite: !item.favorite } : item))} aria-label="Toggle favorite">{template.favorite ? '♥' : '♡'}</button></div>
                   <p className="type">{template.type}</p>
                   {template.description && <p className="description">{template.description}</p>}
                   {normalizeTags(template.tags).length > 0 && (
@@ -198,6 +208,7 @@ function Templates({ templates, updateTemplates, wardrobePieces }) {
                     <button className="btn-small" onClick={() => handleEditTemplate(template)}>Edit</button>
                     <button className="btn-small-danger" onClick={() => handleDelete(template.id)}>Delete</button>
                   </div>
+                  {folders.length > 0 && <select className="save-to-folder" defaultValue="" onChange={event => { addTemplateToFolder(template.id, event.target.value); event.target.value = '' }}><option value="" disabled>Save to folder...</option>{folders.map(folder => <option key={folder.id} value={folder.id}>{folder.name}</option>)}</select>}
                 </div>
               </div>
             ))}

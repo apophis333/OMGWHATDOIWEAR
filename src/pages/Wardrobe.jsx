@@ -6,7 +6,7 @@ const normalizeTags = (tags) => Array.isArray(tags)
   ? tags
   : (tags || '').split(',').map(tag => tag.trim()).filter(Boolean)
 
-function Wardrobe({ pieces, updatePieces }) {
+function Wardrobe({ pieces, updatePieces, folders, updateFolders }) {
   const [showModal, setShowModal] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [filterCategory, setFilterCategory] = useState('All')
@@ -16,6 +16,10 @@ function Wardrobe({ pieces, updatePieces }) {
     category: 'Clothing Item',
     tags: [],
     tagInput: '',
+    season: 'All year',
+    occasion: 'Everyday',
+    color: '',
+    notes: '',
     photo: null,
     photoUrl: ''
   })
@@ -31,7 +35,7 @@ function Wardrobe({ pieces, updatePieces }) {
 
   const handleAddPiece = () => {
     setEditingId(null)
-    setFormData({ name: '', category: 'Clothing Item', tags: [], tagInput: '', photo: null, photoUrl: '' })
+    setFormData({ name: '', category: 'Clothing Item', tags: [], tagInput: '', season: 'All year', occasion: 'Everyday', color: '', notes: '', photo: null, photoUrl: '' })
     setShowModal(true)
   }
 
@@ -42,6 +46,10 @@ function Wardrobe({ pieces, updatePieces }) {
       category: piece.category,
       tags: normalizeTags(piece.tags),
       tagInput: '',
+      season: piece.season || 'All year',
+      occasion: piece.occasion || 'Everyday',
+      color: piece.color || '',
+      notes: piece.notes || '',
       photo: null,
       photoUrl: piece.photoUrl
     })
@@ -100,6 +108,8 @@ function Wardrobe({ pieces, updatePieces }) {
     } else {
       const newPiece = {
         id: Date.now(),
+        createdAt: new Date().toISOString(),
+        favorite: false,
         ...pieceData
       }
       updatePieces([...pieces, newPiece])
@@ -112,6 +122,14 @@ function Wardrobe({ pieces, updatePieces }) {
     if (confirm('Delete this piece?')) {
       updatePieces(pieces.filter(p => p.id !== id))
     }
+  }
+
+  const addPieceToFolder = (pieceId, folderId) => {
+    if (!folderId) return
+    updateFolders(folders.map(folder => folder.id === Number(folderId)
+      ? { ...folder, pieceIds: [...new Set([...(folder.pieceIds || []), pieceId])], itemOrder: [...new Set([...(folder.itemOrder || []), `piece:${pieceId}`])] }
+      : folder
+    ))
   }
 
   return (
@@ -167,8 +185,9 @@ function Wardrobe({ pieces, updatePieces }) {
                   </div>
                 )}
                 <div className="piece-info">
-                  <h3>{piece.name}</h3>
+                  <div className="piece-title-row"><h3>{piece.name}</h3><button className={`favorite-button ${piece.favorite ? 'active' : ''}`} onClick={() => updatePieces(pieces.map(item => item.id === piece.id ? { ...item, favorite: !item.favorite } : item))} aria-label="Toggle favorite">{piece.favorite ? '♥' : '♡'}</button></div>
                   <p className="category">{piece.category}</p>
+                  <p className="metadata">{piece.season || 'All year'} · {piece.occasion || 'Everyday'}{piece.color ? ` · ${piece.color}` : ''}</p>
                   {normalizeTags(piece.tags).length > 0 && (
                     <div className="tags">
                       {normalizeTags(piece.tags).map(tag => <span key={tag} className="tag-chip">{tag}</span>)}
@@ -178,6 +197,7 @@ function Wardrobe({ pieces, updatePieces }) {
                     <button className="btn-small" onClick={() => handleEditPiece(piece)}>Edit</button>
                     <button className="btn-small-danger" onClick={() => handleDelete(piece.id)}>Delete</button>
                   </div>
+                  {folders.length > 0 && <select className="save-to-folder" defaultValue="" onChange={event => { addPieceToFolder(piece.id, event.target.value); event.target.value = '' }}><option value="" disabled>Save to folder...</option>{folders.map(folder => <option key={folder.id} value={folder.id}>{folder.name}</option>)}</select>}
                 </div>
               </div>
             ))}
@@ -262,6 +282,15 @@ function Wardrobe({ pieces, updatePieces }) {
                     onBlur={addTag}
                   />
                 </div>
+              </div>
+
+              <div className="form-grid">
+                <div className="form-section"><label>Season</label><select value={formData.season} onChange={event => setFormData(prev => ({ ...prev, season: event.target.value }))}><option>All year</option><option>Spring</option><option>Summer</option><option>Autumn</option><option>Winter</option></select></div>
+                <div className="form-section"><label>Occasion</label><select value={formData.occasion} onChange={event => setFormData(prev => ({ ...prev, occasion: event.target.value }))}><option>Everyday</option><option>Work</option><option>Formal</option><option>Going out</option><option>Travel</option></select></div>
+              </div>
+              <div className="form-grid">
+                <div className="form-section"><label>Color</label><input placeholder="e.g. ivory" value={formData.color} onChange={event => setFormData(prev => ({ ...prev, color: event.target.value }))} /></div>
+                <div className="form-section"><label>Personal note</label><input placeholder="A quick memory or styling idea" value={formData.notes} onChange={event => setFormData(prev => ({ ...prev, notes: event.target.value }))} /></div>
               </div>
             </div>
 

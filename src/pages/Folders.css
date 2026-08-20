@@ -15,6 +15,9 @@
 .board-heading { display:flex; justify-content:space-between; align-items:flex-start; gap:20px; margin-bottom:28px; }
 .board-heading h2 { font:500 36px Georgia, serif; margin:10px 0 6px; }
 .board-heading p { color:var(--text-secondary); font-size:13px; }
+.board-actions { display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
+.upload-inspiration { position:relative; display:inline-flex; align-items:center; }
+.upload-inspiration input { position:absolute; inset:0; opacity:0; cursor:pointer; }
 .back-link, .text-danger { background:transparent; padding:0; color:var(--text-secondary); font-size:12px; }
 .back-link:hover { color:var(--text-primary); }
 .text-danger { color:#a14d43; }
@@ -26,10 +29,18 @@
 .board-card-copy strong, .board-card-copy span { display:block; }
 .board-card-copy strong { font-size:13px; margin-bottom:4px; }
 .board-card-copy span { color:var(--text-secondary); font-size:11px; }
+.board-note { display:block; margin-top:8px; color:#8c7d72; font-size:11px; line-height:1.4; }
 .remove-board-item { width:calc(100% - 26px); margin:0 13px 12px; padding:7px; background:#f7f3ef; color:var(--text-secondary); font-size:11px; }
 .remove-board-item:hover { background:#eee5de; color:var(--text-primary); }
 .board-add-section { border-top:1px solid var(--border-color); margin-top:36px; padding-top:26px; }
 .board-add-section h3 { font:500 20px Georgia, serif; margin-bottom:16px; }
+.board-toolbar { display:flex; gap:14px; align-items:center; justify-content:space-between; margin-bottom:20px; }
+.board-toolbar > input { flex:1; max-width:380px; background:#fff; }
+.board-view-buttons { display:flex; gap:6px; }
+.board-view-buttons button { padding:8px 12px; background:#fff; border:1px solid #e4dcd5; color:#806e63; font-size:12px; }
+.board-view-buttons button.active { background:#2b231f; border-color:#2b231f; color:#fff; }
+.board-filters { display:flex; flex-wrap:wrap; gap:8px; margin:-8px 0 20px; }
+.board-filters select { padding:8px 10px; border:1px solid #e4dcd5; border-radius:5px; background:#fff; color:#806e63; font-size:11px; }
 .addable-grid { display:flex; flex-wrap:wrap; gap:10px; }
 .addable-item { min-width:160px; padding:12px 14px; background:#fff; border:1px solid #e5ddd6; text-align:left; }
 .addable-item:hover { border-color:#b69b85; transform:translateY(-1px); }

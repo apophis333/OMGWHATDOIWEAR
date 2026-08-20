@@ -10,6 +10,7 @@ import './App.css'
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home')
+  const [wheelFolderId, setWheelFolderId] = useState(null)
   const [data, setData] = useState({
     wardrobePieces: [],
     templates: [],
@@ -51,12 +52,14 @@ function App() {
       case 'home':
         return <Home data={data} onNavigate={setCurrentPage} />
       case 'wardrobe':
-        return <Wardrobe pieces={data.wardrobePieces} updatePieces={updateWardrobePieces} />
+        return <Wardrobe pieces={data.wardrobePieces} updatePieces={updateWardrobePieces} folders={data.folders || []} updateFolders={(folders) => setData(prev => ({ ...prev, folders }))} />
       case 'templates':
         return <Templates 
           templates={data.templates} 
           updateTemplates={updateTemplates}
           wardrobePieces={data.wardrobePieces}
+          folders={data.folders || []}
+          updateFolders={(folders) => setData(prev => ({ ...prev, folders }))}
         />
       case 'folders':
         return <Folders
@@ -64,13 +67,19 @@ function App() {
           updateFolders={(folders) => setData(prev => ({ ...prev, folders }))}
           wardrobePieces={data.wardrobePieces}
           templates={data.templates}
+          onOpenBoardWheel={(folderId) => {
+            setWheelFolderId(folderId)
+            setCurrentPage('wheel')
+          }}
         />
       case 'wheel':
         return <Wheel 
           templates={data.templates}
+          wheelFolder={data.folders?.find(folder => folder.id === wheelFolderId)}
           wearHistory={data.wearHistory}
           updateWearHistory={updateWearHistory}
           onCreateTemplate={() => setCurrentPage('templates')}
+          onClearBoardWheel={() => setWheelFolderId(null)}
         />
       case 'statistics':
         return <Statistics wearHistory={data.wearHistory} templates={data.templates} />
