@@ -24,7 +24,8 @@ function Wardrobe({ pieces, updatePieces }) {
     const pieceTags = normalizeTags(piece.tags)
     const matchesSearch = piece.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                pieceTags.join(' ').toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesCategory = filterCategory === 'All' || piece.category === filterCategory
+    const categoryMap = { Outfits: 'Outfit', Clothing: 'Clothing Item', Accessories: 'Accessory' }
+    const matchesCategory = filterCategory === 'All' || piece.category === categoryMap[filterCategory]
     return matchesSearch && matchesCategory
   })
 

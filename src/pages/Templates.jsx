@@ -30,6 +30,7 @@ function Templates({ templates, updateTemplates, wardrobePieces }) {
     if (filterType === 'All') return true
     if (filterType === 'Outfits') return t.type === 'Outfit'
     if (filterType === 'Vibes') return t.type === 'Vibe'
+    if (filterType === 'Custom') return t.type === 'Custom'
   })
 
   const handleNewTemplate = () => {
@@ -156,7 +157,7 @@ function Templates({ templates, updateTemplates, wardrobePieces }) {
       <div className="templates-content">
         <div className="templates-filter">
           <div className="filter-buttons">
-            {['All', 'Outfits', 'Vibes'].map(type => (
+            {['All', 'Outfits', 'Vibes', 'Custom'].map(type => (
               <button
                 key={type}
                 className={`filter-btn ${filterType === type ? 'active' : ''}`}
@@ -214,7 +215,7 @@ function Templates({ templates, updateTemplates, wardrobePieces }) {
 
             <div className="modal-body">
               <div className="type-tabs">
-                {['Outfit', 'Vibe'].map(type => (
+                {['Outfit', 'Vibe', 'Custom'].map(type => (
                   <button
                     key={type}
                     className={`type-tab ${formData.type === type ? 'active' : ''}`}

@@ -70,6 +70,7 @@ function App() {
           templates={data.templates}
           wearHistory={data.wearHistory}
           updateWearHistory={updateWearHistory}
+          onCreateTemplate={() => setCurrentPage('templates')}
         />
       case 'statistics':
         return <Statistics wearHistory={data.wearHistory} templates={data.templates} />

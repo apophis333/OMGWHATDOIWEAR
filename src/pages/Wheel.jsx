@@ -2,31 +2,45 @@ import { useState } from 'react'
 import PageHeader from '../components/PageHeader'
 import './Wheel.css'
 
-function Wheel({ templates, wearHistory, updateWearHistory }) {
+const FILTERS = ['All', 'Outfits', 'Vibes', 'Custom']
+const SEGMENT_COLORS = ['#d9b7a6', '#b6c8bf', '#d7c6a3', '#c4b7cc', '#c9aeb1', '#b7c2d1']
+
+function Wheel({ templates, wearHistory, updateWearHistory, onCreateTemplate }) {
   const [filterType, setFilterType] = useState('All')
   const [selectedOutfit, setSelectedOutfit] = useState(null)
   const [showWearModal, setShowWearModal] = useState(false)
   const [wearNotes, setWearNotes] = useState('')
+  const [isSpinning, setIsSpinning] = useState(false)
+  const [rotation, setRotation] = useState(0)
 
   const filteredTemplates = templates.filter(t => {
     if (filterType === 'All') return true
     if (filterType === 'Outfits') return t.type === 'Outfit'
     if (filterType === 'Vibes') return t.type === 'Vibe'
+    if (filterType === 'Custom') return t.type === 'Custom'
   })
 
-  const getRandomOutfit = () => {
-    if (filteredTemplates.length === 0) return null
+  const handleSpin = () => {
+    if (isSpinning || filteredTemplates.length === 0) return
     const randomIndex = Math.floor(Math.random() * filteredTemplates.length)
-    return filteredTemplates[randomIndex]
+    const segmentAngle = 360 / filteredTemplates.length
+    setIsSpinning(true)
+    setSelectedOutfit(null)
+    setShowWearModal(false)
+    setRotation(previous => previous + 1440 + (360 - randomIndex * segmentAngle))
+    window.setTimeout(() => {
+      const outfit = filteredTemplates[randomIndex]
+      setSelectedOutfit(outfit)
+      setWearNotes('')
+      setIsSpinning(false)
+    }, 1200)
   }
 
-  const handleSpin = () => {
-    const outfit = getRandomOutfit()
-    setSelectedOutfit(outfit)
-    setWearNotes('')
-    if (outfit) {
-      setShowWearModal(true)
-    }
+  const wheelStyle = {
+    '--wheel-segments': filteredTemplates.length
+      ? `conic-gradient(${filteredTemplates.map((_, index) => `${SEGMENT_COLORS[index % SEGMENT_COLORS.length]} ${index * (100 / filteredTemplates.length)}% ${(index + 1) * (100 / filteredTemplates.length)}%`).join(', ')})`
+      : '#e8e0d9',
+    transform: `rotate(${rotation}deg)`
   }
 
   const handleLogWear = () => {
@@ -56,7 +70,7 @@ function Wheel({ templates, wearHistory, updateWearHistory }) {
         <div className="wheel-controls">
           <div className="filter-buttons">
             <span className="filter-label">TYPE</span>
-            {['All', 'Outfits', 'Vibes'].map(type => (
+            {FILTERS.map(type => (
               <button
                 key={type}
                 className={`filter-btn ${filterType === type ? 'active' : ''}`}
@@ -72,30 +86,39 @@ function Wheel({ templates, wearHistory, updateWearHistory }) {
         {filteredTemplates.length === 0 ? (
           <div className="empty-state">
             <p>No options match your filters.</p>
-            <p className="secondary">No templates yet.</p>
-            <button className="btn-secondary">
+            <p className="secondary">Create a template, then spin to choose a look.</p>
+            <button className="btn-secondary" onClick={onCreateTemplate}>
               + Create a template
             </button>
           </div>
         ) : (
           <div className="wheel-section">
-            {selectedOutfit ? (
-              <div className="outfit-display">
-                {selectedOutfit.photoUrl && (
-                  <img src={selectedOutfit.photoUrl} alt={selectedOutfit.name} />
-                )}
-                <h2>{selectedOutfit.name}</h2>
-                <p>{selectedOutfit.type}</p>
-                <button className="btn-primary" onClick={handleSpin}>
-                  Spin again
-                </button>
+            <div className="wheel-stage">
+              <div className="wheel-pointer" aria-hidden="true">▼</div>
+              <div className={`visual-wheel ${isSpinning ? 'spinning' : ''}`} style={wheelStyle}>
+                {filteredTemplates.map((template, index) => (
+                  <span
+                    key={template.id}
+                    className="wheel-label"
+                    style={{ transform: `rotate(${index * (360 / filteredTemplates.length) + (180 / filteredTemplates.length)}deg) translateY(-112px)` }}
+                  >
+                    {template.name.length > 15 ? `${template.name.slice(0, 15)}...` : template.name}
+                  </span>
+                ))}
+                <div className="wheel-center">{isSpinning ? '...' : '🎲'}</div>
               </div>
-            ) : (
-              <div className="wheel-empty">
-                <div className="spinner-icon" aria-hidden="true">R</div>
-                <button className="btn-spin" onClick={handleSpin}>
-                  SPIN THE WHEEL
-                </button>
+              <button className="btn-spin" onClick={handleSpin} disabled={isSpinning}>
+                {isSpinning ? 'CHOOSING...' : 'SPIN THE WHEEL'}
+              </button>
+            </div>
+            {selectedOutfit && !isSpinning && (
+              <div className="outfit-display">
+                <p className="result-kicker">YOUR LOOK</p>
+                {selectedOutfit.photoUrl && <img src={selectedOutfit.photoUrl} alt={selectedOutfit.name} />}
+                {!selectedOutfit.photoUrl && <div className="result-placeholder">🎲</div>}
+                <h2>{selectedOutfit.name}</h2>
+                <p>{selectedOutfit.type} · Ready to wear</p>
+                <button className="btn-primary" onClick={() => setShowWearModal(true)}>Log this wear</button>
               </div>
             )}
           </div>
