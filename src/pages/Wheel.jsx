@@ -24,10 +24,17 @@ function Wheel({ templates, wearHistory, updateWearHistory, onCreateTemplate }) 
     if (isSpinning || filteredTemplates.length === 0) return
     const randomIndex = Math.floor(Math.random() * filteredTemplates.length)
     const segmentAngle = 360 / filteredTemplates.length
+    const segmentCenter = (randomIndex + 0.5) * segmentAngle
+    const randomOffset = (Math.random() - 0.5) * segmentAngle * 0.7
+    const targetRotation = (360 - segmentCenter + randomOffset + 360) % 360
+    const currentRotation = ((rotation % 360) + 360) % 360
+    const rotationToTarget = (targetRotation - currentRotation + 360) % 360
+    const randomFullTurns = 4 + Math.floor(Math.random() * 4)
+
     setIsSpinning(true)
     setSelectedOutfit(null)
     setShowWearModal(false)
-    setRotation(previous => previous + 1440 + (360 - randomIndex * segmentAngle))
+    setRotation(previous => previous + randomFullTurns * 360 + rotationToTarget)
     window.setTimeout(() => {
       const outfit = filteredTemplates[randomIndex]
       setSelectedOutfit(outfit)
