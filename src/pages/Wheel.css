@@ -1,0 +1,105 @@
+.wheel-content {
+  padding: 30px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.wheel-controls {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.filter-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  letter-spacing: 1px;
+}
+
+.wheel-count {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-left: auto;
+}
+
+.wheel-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.outfit-display {
+  text-align: center;
+  max-width: 400px;
+}
+
+.outfit-display img {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.outfit-display h2 {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: var(--text-primary);
+}
+
+.outfit-display p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+}
+
+.wheel-empty {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+}
+
+.spinner-icon {
+  font-size: 80px;
+  opacity: 0.3;
+}
+
+.btn-spin {
+  background-color: var(--button-dark);
+  color: white;
+  padding: 16px 40px;
+  font-size: 18px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-spin:hover {
+  background-color: var(--button-hover);
+  transform: scale(1.05);
+}
+
+.wear-summary {
+  background-color: #f9f9f9;
+  border-radius: 6px;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.wear-summary h3 {
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.wear-summary p {
+  font-size: 13px;
+  color: var(--text-secondary);
+}

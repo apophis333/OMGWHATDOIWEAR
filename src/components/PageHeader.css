@@ -1,0 +1,25 @@
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 30px;
+  border-bottom: 1px solid var(--border-color);
+  background-color: white;
+}
+
+.page-title {
+  font-size: 32px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 5px;
+}
+
+.page-subtitle {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.page-action {
+  flex-shrink: 0;
+}
