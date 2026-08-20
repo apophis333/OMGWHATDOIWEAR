@@ -7,6 +7,10 @@ const CLOTHING_SLOTS = [
   'Tall Shoes', 'Flat Shoes', 'Bag', 'Jewelry', 'Scarf', 'Belt', 'Custom'
 ]
 
+const normalizeTags = (tags) => Array.isArray(tags)
+  ? tags
+  : (tags || '').split(',').map(tag => tag.trim()).filter(Boolean)
+
 function Templates({ templates, updateTemplates, wardrobePieces }) {
   const [showModal, setShowModal] = useState(false)
   const [filterType, setFilterType] = useState('All')
@@ -15,7 +19,8 @@ function Templates({ templates, updateTemplates, wardrobePieces }) {
     type: 'Outfit',
     name: '',
     description: '',
-    tags: '',
+    tags: [],
+    tagInput: '',
     slots: {},
     photoUrl: ''
   })
@@ -33,7 +38,8 @@ function Templates({ templates, updateTemplates, wardrobePieces }) {
       type: 'Outfit',
       name: '',
       description: '',
-      tags: '',
+      tags: [],
+      tagInput: '',
       slots: {},
       photoUrl: ''
     })
@@ -47,7 +53,8 @@ function Templates({ templates, updateTemplates, wardrobePieces }) {
       type: template.type,
       name: template.name,
       description: template.description,
-      tags: template.tags,
+      tags: normalizeTags(template.tags),
+      tagInput: '',
       slots: template.slots || {},
       photoUrl: template.photoUrl || ''
     })
@@ -77,6 +84,27 @@ function Templates({ templates, updateTemplates, wardrobePieces }) {
     }
   }
 
+  const addTag = () => {
+    const tag = formData.tagInput.trim()
+    if (tag && !formData.tags.includes(tag)) {
+      setFormData(prev => ({ ...prev, tags: [...prev.tags, tag], tagInput: '' }))
+    }
+  }
+
+  const handleTagKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault()
+      addTag()
+    }
+  }
+
+  const removeTag = (tagToRemove) => {
+    setFormData(prev => ({
+      ...prev,
+      tags: prev.tags.filter(tag => tag !== tagToRemove)
+    }))
+  }
+
   const handleSave = () => {
     if (!formData.name.trim()) {
       alert('Please enter a name')
@@ -84,6 +112,7 @@ function Templates({ templates, updateTemplates, wardrobePieces }) {
     }
 
     const slots = {}
+    const { tagInput, ...templateData } = formData
     selectedSlots.forEach(slot => {
       slots[slot] = formData.slots[slot] || null
     })
@@ -91,13 +120,13 @@ function Templates({ templates, updateTemplates, wardrobePieces }) {
     if (editingId) {
       updateTemplates(templates.map(t =>
         t.id === editingId
-          ? { ...formData, id: editingId, slots }
+          ? { ...templateData, id: editingId, slots }
           : t
       ))
     } else {
       const newTemplate = {
         id: Date.now(),
-        ...formData,
+        ...templateData,
         slots
       }
       updateTemplates([...templates, newTemplate])
@@ -159,7 +188,11 @@ function Templates({ templates, updateTemplates, wardrobePieces }) {
                   <h3>{template.name}</h3>
                   <p className="type">{template.type}</p>
                   {template.description && <p className="description">{template.description}</p>}
-                  {template.tags && <p className="tags">{template.tags}</p>}
+                  {normalizeTags(template.tags).length > 0 && (
+                    <div className="tags">
+                      {normalizeTags(template.tags).map(tag => <span key={tag} className="tag-chip">{tag}</span>)}
+                    </div>
+                  )}
                   <div className="template-actions">
                     <button className="btn-small" onClick={() => handleEditTemplate(template)}>Edit</button>
                     <button className="btn-small-danger" onClick={() => handleDelete(template.id)}>Delete</button>
@@ -216,10 +249,20 @@ function Templates({ templates, updateTemplates, wardrobePieces }) {
                 <label>Tags</label>
                 <input
                   type="text"
-                  placeholder="e.g. casual, warm-tones..."
-                  value={formData.tags}
-                  onChange={(e) => setFormData(prev => ({ ...prev, tags: e.target.value }))}
+                  value={formData.tagInput}
+                  placeholder={formData.tags.length ? 'Add another tag' : 'Type a tag and press Enter'}
+                  onChange={(e) => setFormData(prev => ({ ...prev, tagInput: e.target.value }))}
+                  onKeyDown={handleTagKeyDown}
+                  onBlur={addTag}
                 />
+                <div className="form-tags">
+                  {formData.tags.map(tag => (
+                    <span key={tag} className="tag-chip editable">
+                      {tag}
+                      <button type="button" onClick={() => removeTag(tag)} aria-label={`Remove ${tag}`}>x</button>
+                    </span>
+                  ))}
+                </div>
               </div>
 
               <div className="form-section">
@@ -248,7 +291,7 @@ function Templates({ templates, updateTemplates, wardrobePieces }) {
                     </div>
                   ) : (
                     <div className="photo-placeholder">
-                      <span>📷</span>
+                      <span className="camera-mark" aria-hidden="true">+</span>
                       <p>Take or upload photo</p>
                     </div>
                   )}

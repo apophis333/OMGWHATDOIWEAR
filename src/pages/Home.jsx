@@ -40,7 +40,7 @@ function Home({ data, onNavigate }) {
             className="action-card"
             onClick={() => onNavigate('wardrobe')}
           >
-            <div className="action-icon">👕</div>
+            <div className="action-icon" aria-hidden="true">W</div>
             <h3>Wardrobe</h3>
             <p>Photograph and catalog every piece.</p>
           </div>
@@ -49,7 +49,7 @@ function Home({ data, onNavigate }) {
             className="action-card"
             onClick={() => onNavigate('templates')}
           >
-            <div className="action-icon">✨</div>
+            <div className="action-icon" aria-hidden="true">T</div>
             <h3>Templates & Vibes</h3>
             <p>Compose looks from your pieces.</p>
           </div>
@@ -58,7 +58,7 @@ function Home({ data, onNavigate }) {
             className="action-card"
             onClick={() => onNavigate('wheel')}
           >
-            <div className="action-icon">🎡</div>
+            <div className="action-icon" aria-hidden="true">R</div>
             <h3>IDK WHAT TO WEAR?!</h3>
             <p>Can't decide? Let fate pick your look.</p>
           </div>

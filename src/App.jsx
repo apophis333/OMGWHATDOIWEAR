@@ -13,6 +13,7 @@ function App() {
   const [data, setData] = useState({
     wardrobePieces: [],
     templates: [],
+    folders: [],
     wearHistory: [],
   })
 
@@ -58,7 +59,12 @@ function App() {
           wardrobePieces={data.wardrobePieces}
         />
       case 'folders':
-        return <Folders />
+        return <Folders
+          folders={data.folders || []}
+          updateFolders={(folders) => setData(prev => ({ ...prev, folders }))}
+          wardrobePieces={data.wardrobePieces}
+          templates={data.templates}
+        />
       case 'wheel':
         return <Wheel 
           templates={data.templates}

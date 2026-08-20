@@ -110,10 +110,19 @@
 }
 
 .piece-info .tags {
-  font-size: 11px;
-  color: var(--text-secondary);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
   margin-bottom: 10px;
 }
+
+.tag-chip { display:inline-flex; align-items:center; gap:6px; padding:5px 8px; background:#f1ece7; border-radius:999px; color:#665a52; font-size:11px; }
+.tag-chip.editable button { padding:0; background:transparent; color:#806e63; font-size:12px; line-height:1; }
+.tag-input-shell { display:flex; flex-wrap:wrap; align-items:center; gap:6px; min-height:42px; padding:6px 9px; border:1px solid var(--border-color); border-radius:6px; }
+.tag-input-shell:focus-within { border-color:#333; }
+.tag-input-shell input { flex:1; min-width:140px; border:0; padding:4px 3px; }
+.tag-input-shell input:focus { border:0; }
+.camera-mark { display:grid; place-items:center; width:34px; height:34px; border:1px solid #9a9088; border-radius:5px; font-size:22px; color:#766a62; }
 
 .piece-actions {
   display: flex;

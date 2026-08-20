@@ -67,10 +67,16 @@
 }
 
 .template-info .tags {
-  font-size: 11px;
-  color: var(--text-secondary);
+  display:flex;
+  flex-wrap:wrap;
+  gap:5px;
   margin-bottom: 10px;
 }
+
+.form-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+.tag-chip { display:inline-flex; align-items:center; gap:6px; padding:5px 8px; background:#f1ece7; border-radius:999px; color:#665a52; font-size:11px; }
+.tag-chip.editable button { padding:0; background:transparent; color:#806e63; font-size:12px; line-height:1; }
+.camera-mark { display:grid; place-items:center; width:34px; height:34px; border:1px solid #9a9088; border-radius:5px; font-size:22px; color:#766a62; }
 
 .template-actions {
   display: flex;

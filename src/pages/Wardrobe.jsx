@@ -2,6 +2,10 @@ import { useState } from 'react'
 import PageHeader from '../components/PageHeader'
 import './Wardrobe.css'
 
+const normalizeTags = (tags) => Array.isArray(tags)
+  ? tags
+  : (tags || '').split(',').map(tag => tag.trim()).filter(Boolean)
+
 function Wardrobe({ pieces, updatePieces }) {
   const [showModal, setShowModal] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
@@ -10,21 +14,23 @@ function Wardrobe({ pieces, updatePieces }) {
   const [formData, setFormData] = useState({
     name: '',
     category: 'Clothing Item',
-    tags: '',
+    tags: [],
+    tagInput: '',
     photo: null,
     photoUrl: ''
   })
 
   const filteredPieces = pieces.filter(piece => {
+    const pieceTags = normalizeTags(piece.tags)
     const matchesSearch = piece.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         piece.tags.toLowerCase().includes(searchTerm.toLowerCase())
+               pieceTags.join(' ').toLowerCase().includes(searchTerm.toLowerCase())
     const matchesCategory = filterCategory === 'All' || piece.category === filterCategory
     return matchesSearch && matchesCategory
   })
 
   const handleAddPiece = () => {
     setEditingId(null)
-    setFormData({ name: '', category: 'Clothing Item', tags: '', photo: null, photoUrl: '' })
+    setFormData({ name: '', category: 'Clothing Item', tags: [], tagInput: '', photo: null, photoUrl: '' })
     setShowModal(true)
   }
 
@@ -33,7 +39,8 @@ function Wardrobe({ pieces, updatePieces }) {
     setFormData({
       name: piece.name,
       category: piece.category,
-      tags: piece.tags,
+      tags: normalizeTags(piece.tags),
+      tagInput: '',
       photo: null,
       photoUrl: piece.photoUrl
     })
@@ -54,22 +61,45 @@ function Wardrobe({ pieces, updatePieces }) {
     }
   }
 
+  const addTag = () => {
+    const tag = formData.tagInput.trim()
+    if (tag && !formData.tags.includes(tag)) {
+      setFormData(prev => ({ ...prev, tags: [...prev.tags, tag], tagInput: '' }))
+    }
+  }
+
+  const handleTagKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault()
+      addTag()
+    }
+  }
+
+  const removeTag = (tagToRemove) => {
+    setFormData(prev => ({
+      ...prev,
+      tags: prev.tags.filter(tag => tag !== tagToRemove)
+    }))
+  }
+
   const handleSave = () => {
     if (!formData.name.trim()) {
       alert('Please enter a name')
       return
     }
 
+    const { tagInput, ...pieceData } = formData
+
     if (editingId) {
       updatePieces(pieces.map(p =>
         p.id === editingId
-          ? { ...p, ...formData }
+          ? { ...p, ...pieceData }
           : p
       ))
     } else {
       const newPiece = {
         id: Date.now(),
-        ...formData
+        ...pieceData
       }
       updatePieces([...pieces, newPiece])
     }
@@ -138,7 +168,11 @@ function Wardrobe({ pieces, updatePieces }) {
                 <div className="piece-info">
                   <h3>{piece.name}</h3>
                   <p className="category">{piece.category}</p>
-                  {piece.tags && <p className="tags">{piece.tags}</p>}
+                  {normalizeTags(piece.tags).length > 0 && (
+                    <div className="tags">
+                      {normalizeTags(piece.tags).map(tag => <span key={tag} className="tag-chip">{tag}</span>)}
+                    </div>
+                  )}
                   <div className="piece-actions">
                     <button className="btn-small" onClick={() => handleEditPiece(piece)}>Edit</button>
                     <button className="btn-small-danger" onClick={() => handleDelete(piece.id)}>Delete</button>
@@ -169,7 +203,7 @@ function Wardrobe({ pieces, updatePieces }) {
                     </div>
                   ) : (
                     <div className="photo-placeholder">
-                      <span>📷</span>
+                      <span className="camera-mark" aria-hidden="true">+</span>
                       <p>Take or upload photo</p>
                     </div>
                   )}
@@ -211,12 +245,22 @@ function Wardrobe({ pieces, updatePieces }) {
 
               <div className="form-section">
                 <label>Tags</label>
-                <input
-                  type="text"
-                  placeholder="e.g. summer, formal..."
-                  value={formData.tags}
-                  onChange={(e) => setFormData(prev => ({ ...prev, tags: e.target.value }))}
-                />
+                <div className="tag-input-shell">
+                  {formData.tags.map(tag => (
+                    <span key={tag} className="tag-chip editable">
+                      {tag}
+                      <button type="button" onClick={() => removeTag(tag)} aria-label={`Remove ${tag}`}>x</button>
+                    </span>
+                  ))}
+                  <input
+                    type="text"
+                    placeholder={formData.tags.length ? 'Add another tag' : 'Type a tag and press Enter'}
+                    value={formData.tagInput}
+                    onChange={(e) => setFormData(prev => ({ ...prev, tagInput: e.target.value }))}
+                    onKeyDown={handleTagKeyDown}
+                    onBlur={addTag}
+                  />
+                </div>
               </div>
             </div>
 

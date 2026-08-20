@@ -1,22 +1,42 @@
-.folders-header {
-  padding: 30px;
-  border-bottom: 1px solid var(--border-color);
-  background-color: white;
-}
-
-.folders-header h1 {
-  font-size: 32px;
-  font-weight: 600;
-  margin-bottom: 5px;
-}
-
-.folders-header p {
-  font-size: 14px;
-  color: var(--text-secondary);
-}
-
-.folders-empty {
-  padding: 60px 30px;
-  text-align: center;
-  color: var(--text-secondary);
-}
+.folders-header { display:flex; justify-content:space-between; align-items:flex-end; gap:24px; padding:40px 48px; background:#fbfaf8; border-bottom:1px solid var(--border-color); }
+.folders-header h1 { font-family: Georgia, serif; font-size:42px; font-weight:500; margin:4px 0 8px; }
+.folders-header p { color:var(--text-secondary); font-size:14px; }
+.eyebrow { color:#9a7964 !important; font-size:11px !important; letter-spacing:1.6px; text-transform:uppercase; }
+.folders-content { display:grid; grid-template-columns:250px minmax(0,1fr); min-height:calc(100vh - 150px); }
+.folder-list { padding:28px 18px; border-right:1px solid var(--border-color); background:#f6f2ed; }
+.folder-list-empty { padding:24px 10px; color:var(--text-secondary); font-size:13px; }
+.folder-tile { width:100%; display:flex; align-items:center; gap:12px; padding:13px 12px; margin-bottom:8px; background:transparent; border:1px solid transparent; text-align:left; color:var(--text-primary); }
+.folder-tile:hover, .folder-tile.active { background:#fff; border-color:#ded6ce; }
+.folder-tile-mark { width:34px; height:42px; display:grid; place-items:center; background:#d9c5b4; color:#fff; font-size:22px; }
+.folder-tile strong, .folder-tile small { display:block; }
+.folder-tile strong { font-size:13px; margin-bottom:4px; }
+.folder-tile small { color:var(--text-secondary); font-size:11px; }
+.folder-board-area { padding:38px 48px 60px; }
+.board-heading { display:flex; justify-content:space-between; align-items:flex-start; gap:20px; margin-bottom:28px; }
+.board-heading h2 { font:500 36px Georgia, serif; margin:10px 0 6px; }
+.board-heading p { color:var(--text-secondary); font-size:13px; }
+.back-link, .text-danger { background:transparent; padding:0; color:var(--text-secondary); font-size:12px; }
+.back-link:hover { color:var(--text-primary); }
+.text-danger { color:#a14d43; }
+.board-grid { columns:4 180px; column-gap:18px; }
+.board-card { break-inside:avoid; position:relative; margin:0 0 18px; background:#fff; border:1px solid #e7e0da; border-radius:8px; overflow:hidden; box-shadow:0 5px 16px rgba(64,43,30,.06); }
+.board-card img, .board-placeholder { display:block; width:100%; aspect-ratio:4/5; object-fit:cover; background:#ebe4dd; }
+.board-placeholder { display:grid; place-items:center; color:#9a9088; font-size:12px; }
+.board-card-copy { padding:12px 13px 14px; }
+.board-card-copy strong, .board-card-copy span { display:block; }
+.board-card-copy strong { font-size:13px; margin-bottom:4px; }
+.board-card-copy span { color:var(--text-secondary); font-size:11px; }
+.remove-board-item { width:calc(100% - 26px); margin:0 13px 12px; padding:7px; background:#f7f3ef; color:var(--text-secondary); font-size:11px; }
+.remove-board-item:hover { background:#eee5de; color:var(--text-primary); }
+.board-add-section { border-top:1px solid var(--border-color); margin-top:36px; padding-top:26px; }
+.board-add-section h3 { font:500 20px Georgia, serif; margin-bottom:16px; }
+.addable-grid { display:flex; flex-wrap:wrap; gap:10px; }
+.addable-item { min-width:160px; padding:12px 14px; background:#fff; border:1px solid #e5ddd6; text-align:left; }
+.addable-item:hover { border-color:#b69b85; transform:translateY(-1px); }
+.addable-item span, .addable-item strong { display:block; }
+.addable-item span { color:#9a7964; font-size:10px; text-transform:uppercase; letter-spacing:.7px; margin-bottom:6px; }
+.addable-item strong { font-size:12px; }
+.folders-empty { display:grid; place-content:center; min-height:350px; text-align:center; color:var(--text-secondary); }
+.folders-empty p { color:var(--text-primary); font:500 22px Georgia, serif; margin-bottom:8px; }
+.folders-empty span { font-size:13px; }
+@media (max-width: 850px) { .folders-header { padding:30px 24px; } .folders-content { grid-template-columns:1fr; } .folder-list { display:flex; overflow-x:auto; border-right:0; border-bottom:1px solid var(--border-color); } .folder-tile { min-width:190px; } .folder-board-area { padding:28px 24px 48px; } }

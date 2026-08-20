@@ -92,7 +92,7 @@ function Wheel({ templates, wearHistory, updateWearHistory }) {
               </div>
             ) : (
               <div className="wheel-empty">
-                <div className="spinner-icon">🎡</div>
+                <div className="spinner-icon" aria-hidden="true">R</div>
                 <button className="btn-spin" onClick={handleSpin}>
                   SPIN THE WHEEL
                 </button>

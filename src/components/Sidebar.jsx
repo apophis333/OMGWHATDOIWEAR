@@ -12,7 +12,7 @@ function Sidebar({ currentPage, onPageChange }) {
           className={`nav-item ${currentPage === 'home' ? 'active' : ''}`}
           onClick={() => onPageChange('home')}
         >
-          <span className="icon">🏠</span>
+          <span className="icon" aria-hidden="true">H</span>
           Home
         </button>
         
@@ -20,7 +20,7 @@ function Sidebar({ currentPage, onPageChange }) {
           className={`nav-item ${currentPage === 'wardrobe' ? 'active' : ''}`}
           onClick={() => onPageChange('wardrobe')}
         >
-          <span className="icon">👕</span>
+          <span className="icon" aria-hidden="true">W</span>
           Wardrobe
         </button>
         
@@ -28,7 +28,7 @@ function Sidebar({ currentPage, onPageChange }) {
           className={`nav-item ${currentPage === 'templates' ? 'active' : ''}`}
           onClick={() => onPageChange('templates')}
         >
-          <span className="icon">✨</span>
+          <span className="icon" aria-hidden="true">T</span>
           Templates
         </button>
         
@@ -36,7 +36,7 @@ function Sidebar({ currentPage, onPageChange }) {
           className={`nav-item ${currentPage === 'folders' ? 'active' : ''}`}
           onClick={() => onPageChange('folders')}
         >
-          <span className="icon">📁</span>
+          <span className="icon" aria-hidden="true">F</span>
           Folders
         </button>
         
@@ -44,7 +44,7 @@ function Sidebar({ currentPage, onPageChange }) {
           className={`nav-item ${currentPage === 'wheel' ? 'active' : ''}`}
           onClick={() => onPageChange('wheel')}
         >
-          <span className="icon">🎡</span>
+          <span className="icon" aria-hidden="true">R</span>
           IDK WHAT TO WEAR?!
         </button>
 
@@ -52,7 +52,7 @@ function Sidebar({ currentPage, onPageChange }) {
           className={`nav-item ${currentPage === 'statistics' ? 'active' : ''}`}
           onClick={() => onPageChange('statistics')}
         >
-          <span className="icon">📊</span>
+          <span className="icon" aria-hidden="true">S</span>
           Statistics
         </button>
       </nav>

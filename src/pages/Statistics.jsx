@@ -27,7 +27,7 @@ function Statistics({ wearHistory, templates }) {
       <div className="statistics-content">
         {wearHistory.length === 0 ? (
           <div className="empty-state">
-            <div className="empty-icon">📊</div>
+            <div className="empty-icon" aria-hidden="true">S</div>
             <p>No wears logged yet. Start logging outfits from templates or the wheel to see your stats here.</p>
           </div>
         ) : (
