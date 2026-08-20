@@ -139,6 +139,10 @@
   border-color: var(--button-dark);
 }
 
+.custom-slot-btn, .slot-custom-input { min-width:86px; min-height:32px; }
+.slot-custom-input { width:120px; padding:8px 10px; border:1px dashed #9a7964; border-radius:6px; background:#fffaf6; color:var(--text-primary); font:inherit; font-size:12px; }
+.slot-custom-input:focus { outline:2px solid #d9b7a6; outline-offset:1px; }
+
 .slots-hint {
   font-size: 12px;
   color: var(--text-secondary);

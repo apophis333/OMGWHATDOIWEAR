@@ -4,14 +4,14 @@ import './Templates.css'
 
 const CLOTHING_SLOTS = [
   'Hat', 'Top', 'Jacket', 'Sweater', 'Skirt', 'Jeans', 'Pants',
-  'Tall Shoes', 'Flat Shoes', 'Bag', 'Jewelry', 'Scarf', 'Belt', 'Custom'
+  'Tall Shoes', 'Flat Shoes', 'Bag', 'Jewelry', 'Scarf', 'Belt'
 ]
 
 const normalizeTags = (tags) => Array.isArray(tags)
   ? tags
   : (tags || '').split(',').map(tag => tag.trim()).filter(Boolean)
 
-function Templates({ templates, updateTemplates, wardrobePieces, folders, updateFolders }) {
+function Templates({ templates, updateTemplates, wardrobePieces, customSlotOptions = [], updateCustomSlotOptions, folders, updateFolders }) {
   const [showModal, setShowModal] = useState(false)
   const [filterType, setFilterType] = useState('All')
   const [editingId, setEditingId] = useState(null)
@@ -25,6 +25,8 @@ function Templates({ templates, updateTemplates, wardrobePieces, folders, update
     photoUrl: ''
   })
   const [selectedSlots, setSelectedSlots] = useState([])
+  const [customSlotInput, setCustomSlotInput] = useState('')
+  const [isAddingCustomSlot, setIsAddingCustomSlot] = useState(false)
 
   const filteredTemplates = templates.filter(t => {
     if (filterType === 'All') return true
@@ -45,6 +47,8 @@ function Templates({ templates, updateTemplates, wardrobePieces, folders, update
       photoUrl: ''
     })
     setSelectedSlots([])
+    setCustomSlotInput('')
+    setIsAddingCustomSlot(false)
     setShowModal(true)
   }
 
@@ -60,6 +64,8 @@ function Templates({ templates, updateTemplates, wardrobePieces, folders, update
       photoUrl: template.photoUrl || ''
     })
     setSelectedSlots(Object.keys(template.slots || {}))
+    setCustomSlotInput('')
+    setIsAddingCustomSlot(false)
     setShowModal(true)
   }
 
@@ -69,6 +75,17 @@ function Templates({ templates, updateTemplates, wardrobePieces, folders, update
         ? prev.filter(s => s !== slot)
         : [...prev, slot]
     )
+  }
+
+  const addCustomSlot = () => {
+    const slot = customSlotInput.trim()
+    if (!slot) return
+    const existingSlot = [...CLOTHING_SLOTS, ...customSlotOptions].find(option => option.toLowerCase() === slot.toLowerCase())
+    const savedSlot = existingSlot || slot
+    if (!existingSlot) updateCustomSlotOptions([...customSlotOptions, slot])
+    setSelectedSlots(prev => prev.includes(savedSlot) ? prev : [...prev, savedSlot])
+    setCustomSlotInput('')
+    setIsAddingCustomSlot(false)
   }
 
   const handlePhotoChange = (e) => {
@@ -280,7 +297,7 @@ function Templates({ templates, updateTemplates, wardrobePieces, folders, update
               <div className="form-section">
                 <label>Slots (pick one from each when you wear it)</label>
                 <div className="slots-grid">
-                  {CLOTHING_SLOTS.map(slot => (
+                  {[...CLOTHING_SLOTS, ...customSlotOptions].map(slot => (
                     <button
                       key={slot}
                       className={`slot-btn ${selectedSlots.includes(slot) ? 'active' : ''}`}
@@ -289,6 +306,19 @@ function Templates({ templates, updateTemplates, wardrobePieces, folders, update
                       + {slot}
                     </button>
                   ))}
+                  {isAddingCustomSlot ? (
+                    <input
+                      className="slot-custom-input"
+                      autoFocus
+                      value={customSlotInput}
+                      placeholder="Type a slot"
+                      onChange={event => setCustomSlotInput(event.target.value)}
+                      onKeyDown={event => { if (event.key === 'Enter') { event.preventDefault(); addCustomSlot() } if (event.key === 'Escape') { setIsAddingCustomSlot(false); setCustomSlotInput('') } }}
+                      onBlur={addCustomSlot}
+                    />
+                  ) : (
+                    <button className="slot-btn custom-slot-btn" onClick={() => setIsAddingCustomSlot(true)}>+ Custom</button>
+                  )}
                 </div>
                 <p className="slots-hint">Add slots like Hat, Top, Jacket, Jeans...</p>
               </div>

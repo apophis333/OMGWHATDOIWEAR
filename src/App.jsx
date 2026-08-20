@@ -14,6 +14,7 @@ function App() {
   const [data, setData] = useState({
     wardrobePieces: [],
     templates: [],
+    customSlotOptions: [],
     folders: [],
     wearHistory: [],
   })
@@ -58,6 +59,8 @@ function App() {
           templates={data.templates} 
           updateTemplates={updateTemplates}
           wardrobePieces={data.wardrobePieces}
+          customSlotOptions={data.customSlotOptions || []}
+          updateCustomSlotOptions={(customSlotOptions) => setData(prev => ({ ...prev, customSlotOptions }))}
           folders={data.folders || []}
           updateFolders={(folders) => setData(prev => ({ ...prev, folders }))}
         />
